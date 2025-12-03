@@ -92,6 +92,68 @@ def load_dgs10_data(start_date='1962-01-01', end_date='2025-11-30', csv_path='..
     return dgs10
 
 
+def preprocess_data(sp500_df, dgs10_df):
+    """
+    주식/채권 수익률 계산 및 데이터 병합
+    
+    Args:
+        sp500_df (pd.DataFrame): S&P500 가격 데이터
+            Index: Date
+            Columns: ['SP500']
+        dgs10_df (pd.DataFrame): DGS10 금리 데이터 (% 단위)
+            Index: Date
+            Columns: ['DGS10']
+    
+    Returns:
+        pd.DataFrame: 일간 수익률 데이터
+            Index: Date (공통 거래일만)
+            Columns: ['r_stock', 'r_bond']
+    
+    Note:
+        - 주식 수익률: r_stock = P_t / P_{t-1} - 1
+        - 채권 수익률: 제로쿠폰 채권 가격 공식 사용
+            P_t = 100 / (1 + y_t/100)^10
+            r_bond = (P_t / P_{t-1}) - 1
+        - Inner join: 주식과 채권 모두 데이터가 있는 날만 사용
+    """
+    print("Preprocessing data...")
+    
+    # 1. S&P500 가격 데이터 준비
+    # yfinance는 MultiIndex를 반환할 수 있으므로 단일 컬럼으로 변환
+    if isinstance(sp500_df.columns, pd.MultiIndex):
+        sp500_df = sp500_df.droplevel(1, axis=1)  # Ticker 레벨 제거
+    
+    # 컬럼명 통일
+    sp500_df.columns = ['SP500']
+    
+    # 2. Inner join으로 공통 날짜만 추출
+    data = sp500_df.join(dgs10_df, how='inner')
+    
+    print(f"Common dates after inner join: {len(data)} days")
+    
+    # 3. 주식 일간 수익률 계산
+    data['r_stock'] = data['SP500'].pct_change()
+    
+    # 4. 채권 수익률 계산 (제로쿠폰 채권 가격 공식)
+    # P_t = 100 / (1 + y_t/100)^10
+    data['bond_price'] = 100 / (1 + data['DGS10'] / 100) ** 10
+    
+    # r_bond = (P_t / P_{t-1}) - 1
+    data['r_bond'] = data['bond_price'].pct_change()
+    
+    # 5. 필요한 컬럼만 선택 (r_stock, r_bond)
+    result = data[['r_stock', 'r_bond']].copy()
+    
+    # 6. 첫 번째 행 제거 (pct_change로 인한 NaN)
+    result = result.dropna()
+    
+    print(f"Final data shape: {result.shape}")
+    print(f"Date range: {result.index[0]} to {result.index[-1]}")
+    print(f"Missing values: {result.isnull().sum().sum()}")
+    
+    return result
+
+
 # 테스트 코드
 if __name__ == '__main__':
     # S&P500 데이터 다운로드 테스트
@@ -118,3 +180,18 @@ if __name__ == '__main__':
     print(f"\nData info:")
     print(dgs10.info())
     print(f"\nMissing values: {dgs10.isnull().sum().sum()}")
+    
+    # 데이터 전처리 테스트
+    print("\n" + "="*50)
+    data = preprocess_data(sp500, dgs10)
+    
+    print("\n=== Preprocessed Data ===")
+    print(f"Shape: {data.shape}")
+    print(f"\nFirst 5 rows:")
+    print(data.head())
+    print(f"\nLast 5 rows:")
+    print(data.tail())
+    print(f"\nData statistics:")
+    print(data.describe())
+    print(f"\nData info:")
+    print(data.info())
