@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+myenv/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# PyTorch
+*.pt
+*.pth
+
+# Data files
+data/raw/*.csv
+data/raw/*.xlsx
+data/processed/*.csv
+data/processed/*.pkl
+
+# Results (excluded - models uploaded to Google Drive separately)
+results/models/*.pt
+results/logs/*.json
+results/plots/*.png
+results/plots/*.pdf
+
+# Documentation (project planning files)
+docs/
+design.md
+todo.md
+project_goals.md
+notes.md
+# Keep README.md for GitHub
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
