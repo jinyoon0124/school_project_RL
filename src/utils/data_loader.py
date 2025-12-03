@@ -10,7 +10,33 @@ This module handles:
 import pandas as pd
 import numpy as np
 import yfinance as yf
-from fredapi import Fred
+
+def split_data(df):
+    """
+    데이터를 Train/Val/Test로 분할
+    
+    Args:
+        df (pd.DataFrame): 전처리된 데이터 (Index: Date)
+        
+    Returns:
+        tuple: (train_df, val_df, test_df)
+    """
+    # Train: ~ 1999-12-31
+    train_df = df.loc[:'1999-12-31']
+    
+    # Val: 2000-01-01 ~ 2007-12-31
+    val_df = df.loc['2000-01-01':'2007-12-31']
+    
+    # Test: 2008-01-01 ~
+    test_df = df.loc['2008-01-01':]
+    
+    print(f"Data Split Results:")
+    print(f"Train: {len(train_df)} days ({train_df.index[0].date()} ~ {train_df.index[-1].date()})")
+    print(f"Val  : {len(val_df)} days ({val_df.index[0].date()} ~ {val_df.index[-1].date()})")
+    print(f"Test : {len(test_df)} days ({test_df.index[0].date()} ~ {test_df.index[-1].date()})")
+    
+    return train_df, val_df, test_df
+
 
 
 def load_sp500_data(start_date='1962-01-01', end_date='2025-11-30'):
@@ -195,3 +221,7 @@ if __name__ == '__main__':
     print(data.describe())
     print(f"\nData info:")
     print(data.info())
+
+    # 데이터 분할 테스트
+    print("\n" + "="*50)
+    train, val, test = split_data(data)
