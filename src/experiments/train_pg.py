@@ -133,9 +133,27 @@ def main():
     log_filename = get_log_filename('pg', seed, timestamp)
     log_path = os.path.join(project_root, 'results', 'logs', log_filename)
     
-    # 학습 로그 저장
+    # 학습 로그 저장 (하이퍼파라미터 포함)
+    from src.agents.pg_agent import learning_rate, gamma, num_traj, num_iter, network_hidden_size
+    
+    log_data = {
+        'hyperparameters': {
+            'algorithm': 'Policy Gradient (REINFORCE)',
+            'learning_rate': learning_rate,
+            'gamma': gamma,
+            'num_trajectories': num_traj,
+            'num_iterations': num_iter,
+            'network_hidden_size': network_hidden_size,
+            'lambda_risk': LAMBDA_RISK,
+            'episode_years': EPISODE_YEARS,
+            'seed': seed,
+            'timestamp': timestamp
+        },
+        'training_history': training_log
+    }
+    
     with open(log_path, 'w') as f:
-        json.dump(training_log, f, indent=2)
+        json.dump(log_data, f, indent=2)
     
     print(f"✓ Training log saved: {log_filename}")
     

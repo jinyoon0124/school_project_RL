@@ -143,9 +143,37 @@ def main():
     torch.save(checkpoint, model_path)
     print(f"✓ Model saved: {model_filename}")
     
-    # 학습 로그 JSON 저장
+    # 학습 로그 JSON 저장 (하이퍼파라미터 포함)
+    from src.agents.dqn_agent import (
+        gamma, buffer_limit, min_buffer_size,
+        epsilon_start, epsilon_end, epsilon_decay_episodes,
+        target_update_freq, train_iterations_per_step, total_episodes
+    )
+    
+    log_data = {
+        'hyperparameters': {
+            'algorithm': 'DQN',
+            'learning_rate': learning_rate,
+            'gamma': gamma,
+            'batch_size': batch_size,
+            'buffer_limit': buffer_limit,
+            'min_buffer_size': min_buffer_size,
+            'epsilon_start': epsilon_start,
+            'epsilon_end': epsilon_end,
+            'epsilon_decay_episodes': epsilon_decay_episodes,
+            'target_update_freq': target_update_freq,
+            'train_iterations_per_step': train_iterations_per_step,
+            'total_episodes': total_episodes,
+            'lambda_risk': LAMBDA_RISK,
+            'episode_years': EPISODE_YEARS,
+            'seed': seed,
+            'timestamp': timestamp
+        },
+        'training_history': training_log
+    }
+    
     with open(log_path, 'w') as f:
-        json.dump(training_log, f, indent=2)
+        json.dump(log_data, f, indent=2)
     
     print(f"✓ Training log saved: {log_filename}")
     
