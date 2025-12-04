@@ -22,7 +22,7 @@ TEST_START_DATE = '2008-01-01'
 # 환경 설정 (PortfolioEnv)
 # ============================================================================
 LAMBDA_RISK = 1.0          # Sharpe proxy 위험 회피 계수
-EPISODE_YEARS = 10         # 에피소드 길이 (년 단위)
+EPISODE_YEARS = 7          # 에피소드 길이 (년 단위) - 최적화: 10 → 7
 
 
 # ============================================================================
@@ -45,8 +45,8 @@ DQN_CONFIG = {
     'epsilon_end': 0.01,
     'epsilon_decay_episodes': 100,
     'target_update_freq': 10,
-    'train_iterations_per_step': 10,
-    'total_episodes': 1000
+    'train_iterations_per_step': 7,   # 최적화: 10 → 7 (학습 시간 단축)
+    'total_episodes': 500              # 최적화: 1000 → 500 (학습 시간 단축)
 }
 
 
