@@ -5,31 +5,36 @@ DQN Agent for Portfolio Management
 import collections
 import random
 import numpy as np
+import os
+import sys
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
+# Config import
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.insert(0, project_root)
+
+from src.config import DQN_CONFIG
 
 # ============================================================================
-# 하이퍼파라미터 
+# 하이퍼파라미터 (config.py에서 가져오기)
 # ============================================================================
-learning_rate = 0.0005      # Adam optimizer learning rate
-gamma = 0.98                # Discount factor (미래 보상 할인율)
-buffer_limit = 50000        # Replay buffer 최대 크기
-batch_size = 32             # 미니배치 크기
-min_buffer_size = 2000      # 학습 시작을 위한 최소 buffer 크기
+learning_rate = DQN_CONFIG['learning_rate']
+gamma = DQN_CONFIG['gamma']
+buffer_limit = DQN_CONFIG['buffer_limit']
+batch_size = DQN_CONFIG['batch_size']
+min_buffer_size = DQN_CONFIG['min_buffer_size']
 
-# Epsilon-greedy 탐험 파라미터
-epsilon_start = 0.08        # 초기 탐험 확률 (8%)
-epsilon_end = 0.01          # 최종 탐험 확률 (1%)
-epsilon_decay_episodes = 100  # Epsilon이 감소하는 에피소드 수
+epsilon_start = DQN_CONFIG['epsilon_start']
+epsilon_end = DQN_CONFIG['epsilon_end']
+epsilon_decay_episodes = DQN_CONFIG['epsilon_decay_episodes']
 
-# 학습 관련 파라미터
-target_update_freq = 10     # Target network 업데이트 주기 (에피소드 단위)
-train_iterations_per_step = 10  # 각 step마다 수행할 학습 반복 횟수
-total_episodes = 1000       # 총 학습 에피소드 수
+target_update_freq = DQN_CONFIG['target_update_freq']
+train_iterations_per_step = DQN_CONFIG['train_iterations_per_step']
+total_episodes = DQN_CONFIG['total_episodes']
 
 
 # ============================================================================
