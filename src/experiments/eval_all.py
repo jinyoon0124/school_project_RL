@@ -82,7 +82,11 @@ def evaluate_baseline_simple(stock_weight, df, rebalance=False):
         rebalance (bool): 월초 리밸런싱 여부
         
     Returns:
-        dict: 성능 지표
+        dict: {
+            'metrics': 성능 지표,
+            'returns': 일별 수익률 배열,
+            'dates': 날짜 인덱스
+        }
     """
     w_stock = stock_weight
     w_bond = 1.0 - stock_weight
@@ -107,7 +111,12 @@ def evaluate_baseline_simple(stock_weight, df, rebalance=False):
     # 성능 지표 계산
     metrics = calculate_all_metrics(returns)
     
-    return metrics
+    # 수정: 딕셔너리로 반환
+    return {
+        'metrics': metrics,
+        'returns': np.array(returns),
+        'dates': df.index[:len(returns)]
+    }
 
 
 def compare_baselines(test_df):
@@ -118,7 +127,7 @@ def compare_baselines(test_df):
         test_df: Test 데이터
         
     Returns:
-        dict: 각 전략의 성능 지표
+        dict: 각 전략의 {metrics, returns, dates}
     """
     print("=" * 70)
     print("Baseline Strategy Evaluation (Test Period)")
@@ -131,7 +140,7 @@ def compare_baselines(test_df):
     strategies = {
         '100% Stock': {'stock_weight': 1.0, 'rebalance': False},
         '100% Bond': {'stock_weight': 0.0, 'rebalance': False},
-        '60/40 (Monthly Rebalance)': {'stock_weight': 0.6, 'rebalance': True}
+        '60/40 Rebalance': {'stock_weight': 0.6, 'rebalance': True}
     }
     
     results = {}
@@ -140,25 +149,18 @@ def compare_baselines(test_df):
         print(f"\n[{strategy_name}]")
         print("-" * 70)
         
-        # 전략 평가
-        metrics = evaluate_baseline_simple(
+        # 전략 평가 (딕셔너리 반환)
+        result = evaluate_baseline_simple(
             stock_weight=params['stock_weight'],
             df=test_df,
             rebalance=params['rebalance']
         )
         
         # 결과 출력
-        print_metrics(metrics, title=strategy_name)
+        print_metrics(result['metrics'], title=strategy_name)
         
-        # 결과 저장
-        results[strategy_name] = {
-            'cumulative_return': metrics['cumulative_return'],
-            'annualized_return': metrics['annualized_return'],
-            'volatility': metrics['volatility'],
-            'sharpe_ratio': metrics['sharpe_ratio'],
-            'max_drawdown': metrics['max_drawdown'],
-            'num_periods': metrics['num_periods']
-        }
+        # 결과 저장 (전체 딕셔너리)
+        results[strategy_name] = result
     
     return results
 
@@ -173,7 +175,11 @@ def evaluate_model(model, test_df, model_type='dqn'):
         model_type: 'dqn' 또는 'pg'
         
     Returns:
-        dict: 성능 지표
+        dict: {
+            'metrics': 성능 지표,
+            'returns': 일별 수익률 배열,
+            'dates': 날짜 인덱스
+        }
     """
     model.eval()  # 평가 모드
     
@@ -224,7 +230,13 @@ def evaluate_model(model, test_df, model_type='dqn'):
     
     # 6. 성능 지표 계산
     metrics = calculate_all_metrics(returns)
-    return metrics
+    
+    # 수정: 딕셔너리로 반환
+    return {
+        'metrics': metrics,
+        'returns': np.array(returns),
+        'dates': test_df.index[5:5+len(returns)]
+    }
 
 
 def load_and_evaluate_dqn(model_path, test_df):
@@ -236,31 +248,24 @@ def load_and_evaluate_dqn(model_path, test_df):
         test_df: Test 데이터
         
     Returns:
-        dict: 성능 지표
+        dict: {metrics, returns, dates}
     """
     print("\n[DQN Model]")
     print("-" * 70)
     print(f"Loading model from: {model_path}")
     
     # 모델 로드
-    checkpoint = torch.load(model_path)
+    checkpoint = torch.load(model_path, weights_only=False)
     model = Qnet()
-    model.load_state_dict(checkpoint['q_state_dict'])
+    model.load_state_dict(checkpoint['model_state_dict'])
     
     # 평가 (환경 없이 직접 계산)
-    metrics = evaluate_model(model, test_df, model_type='dqn')
+    result = evaluate_model(model, test_df, model_type='dqn')
     
     # 결과 출력
-    print_metrics(metrics, title="DQN Model")
+    print_metrics(result['metrics'], title="DQN Model")
     
-    return {
-        'cumulative_return': metrics['cumulative_return'],
-        'annualized_return': metrics['annualized_return'],
-        'volatility': metrics['volatility'],
-        'sharpe_ratio': metrics['sharpe_ratio'],
-        'max_drawdown': metrics['max_drawdown'],
-        'num_periods': metrics['num_periods']
-    }
+    return result
 
 
 def load_and_evaluate_pg(model_path, test_df):
@@ -272,31 +277,24 @@ def load_and_evaluate_pg(model_path, test_df):
         test_df: Test 데이터
         
     Returns:
-        dict: 성능 지표
+        dict: {metrics, returns, dates}
     """
     print("\n[Policy Gradient Model]")
     print("-" * 70)
     print(f"Loading model from: {model_path}")
     
     # 모델 로드
-    checkpoint = torch.load(model_path)
+    checkpoint = torch.load(model_path, weights_only=False)
     model = PolicyNet()
     model.load_state_dict(checkpoint['policy_state_dict'])
     
     # 평가 (환경 없이 직접 계산)
-    metrics = evaluate_model(model, test_df, model_type='pg')
+    result = evaluate_model(model, test_df, model_type='pg')
     
     # 결과 출력
-    print_metrics(metrics, title="Policy Gradient Model")
+    print_metrics(result['metrics'], title="Policy Gradient Model")
     
-    return {
-        'cumulative_return': metrics['cumulative_return'],
-        'annualized_return': metrics['annualized_return'],
-        'volatility': metrics['volatility'],
-        'sharpe_ratio': metrics['sharpe_ratio'],
-        'max_drawdown': metrics['max_drawdown'],
-        'num_periods': metrics['num_periods']
-    }
+    return result
 
 
 def compare_all_strategies(baseline_results, dqn_results, pg_results):
@@ -304,35 +302,39 @@ def compare_all_strategies(baseline_results, dqn_results, pg_results):
     모든 전략 비교 테이블 출력
     
     Args:
-        baseline_results: Baseline 전략 결과
-        dqn_results: DQN 결과
-        pg_results: PG 결과
+        baseline_results: Baseline 전략 결과 ({전략명: {metrics, returns, dates}})
+        dqn_results: DQN 결과 ({metrics, returns, dates})
+        pg_results: PG 결과 ({metrics, returns, dates})
+        
+    Returns:
+        dict: 모든 전략의 결과
     """
     print("\n" + "=" * 70)
     print("All Strategies Comparison (Test Period)")
     print("=" * 70)
     
     # 모든 결과 합치기
-    all_results = {**baseline_results, 'DQN': dqn_results, 'Policy Gradient': pg_results}
+    all_results = {**baseline_results, 'DQN': dqn_results, 'PG': pg_results}
     
     # 테이블 헤더
     print(f"\n{'Strategy':<30} {'Cum.Ret':<12} {'Ann.Ret':<10} {'Vol':<10} {'Sharpe':<10} {'MaxDD':<10}")
     print("-" * 90)
     
     # 각 전략 출력
-    for strategy_name, results in all_results.items():
+    for strategy_name, result in all_results.items():
+        metrics = result['metrics']
         print(f"{strategy_name:<30} "
-              f"{results['cumulative_return']:>10.2%}  "
-              f"{results['annualized_return']:>8.2%}  "
-              f"{results['volatility']:>8.2%}  "
-              f"{results['sharpe_ratio']:>8.4f}  "
-              f"{results['max_drawdown']:>8.2%}")
+              f"{metrics['cumulative_return']:>10.2%}  "
+              f"{metrics['annualized_return']:>8.2%}  "
+              f"{metrics['volatility']:>8.2%}  "
+              f"{metrics['sharpe_ratio']:>8.4f}  "
+              f"{metrics['max_drawdown']:>8.2%}")
     
     print("=" * 90)
     
     # 최고 Sharpe ratio 찾기
-    best_strategy = max(all_results.items(), key=lambda x: x[1]['sharpe_ratio'])
-    print(f"\n🏆 Best Strategy (Sharpe Ratio): {best_strategy[0]} ({best_strategy[1]['sharpe_ratio']:.4f})")
+    best_strategy = max(all_results.items(), key=lambda x: x[1]['metrics']['sharpe_ratio'])
+    print(f"\n🏆 Best Strategy (Sharpe Ratio): {best_strategy[0]} ({best_strategy[1]['metrics']['sharpe_ratio']:.4f})")
     
     return all_results
 
