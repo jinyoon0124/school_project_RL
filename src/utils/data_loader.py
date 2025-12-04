@@ -39,28 +39,86 @@ def split_data(df):
 
 
 
-def load_sp500_data(start_date='1962-01-01', end_date='2025-11-30'):
+def load_sp500_data(start_date='1962-01-01', end_date='2025-11-30', csv_path='../../data/raw/SP500.csv'):
     """
-    S&P500 지수 데이터 다운로드
+    S&P500 지수 데이터 로드 (로컬 캐시 우선 사용)
     
     Args:
         start_date (str): 시작 날짜 (YYYY-MM-DD)
         end_date (str): 종료 날짜 (YYYY-MM-DD)
+        csv_path (str): 저장/로드할 CSV 파일 경로
     
     Returns:
         pd.DataFrame: S&P500 종가 데이터
             Index: Date
             Columns: ['SP500']
     """
+    import os
+    
+    # 상대 경로를 절대 경로로 변환
+    if not os.path.isabs(csv_path):
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        csv_path = os.path.join(current_dir, csv_path)
+    
+    # 1. 로컬 파일이 있으면 로드
+    if os.path.exists(csv_path):
+        print(f"Loading S&P500 data from local cache: {csv_path}")
+        try:
+            # index_col=0으로 첫 번째 컬럼(Date)을 인덱스로 지정
+            sp500 = pd.read_csv(csv_path, index_col=0)
+            
+            # 인덱스를 날짜형으로 변환 및 정렬
+            sp500.index = pd.to_datetime(sp500.index)
+            sp500 = sp500.sort_index()
+            
+            # 날짜 범위 필터링
+            sp500 = sp500.loc[start_date:end_date]
+            
+            print(f"Loaded {len(sp500)} days of S&P500 data from cache")
+            return sp500
+        except Exception as e:
+            print(f"Error loading cache: {e}. Downloading fresh data...")
+    
+    # 2. 로컬 파일이 없거나 에러 시 다운로드
     print(f"Downloading S&P500 data from {start_date} to {end_date}...")
     
     # ^GSPC = S&P500 지수 티커
-    sp500 = yf.download('^GSPC', start=start_date, end=end_date, progress=False)
+    # auto_adjust=True는 배당/분할 조정 (지수는 배당 없지만 일관성 위해)
+    sp500 = yf.download('^GSPC', start=start_date, end=end_date, progress=False, auto_adjust=True)
     
-    # Close 가격만 추출하고 컬럼명 변경
-    sp500 = sp500[['Close']].rename(columns={'Close': 'SP500'})
+    if sp500.empty:
+        raise ValueError("Downloaded S&P500 data is empty. Check internet connection or ticker.")
     
-    print(f"Downloaded {len(sp500)} days of S&P500 data")
+    # MultiIndex 컬럼 처리 및 Close 가격 추출
+    # yfinance 최신 버전은 (Price, Ticker) 형태의 MultiIndex를 반환함
+    if isinstance(sp500.columns, pd.MultiIndex):
+        try:
+            # 'Close' 또는 'Adj Close' 레벨 추출 (Price 레벨)
+            if 'Close' in sp500.columns.get_level_values(0):
+                sp500 = sp500.xs('Close', axis=1, level=0)
+            elif 'Adj Close' in sp500.columns.get_level_values(0):
+                sp500 = sp500.xs('Adj Close', axis=1, level=0)
+            else:
+                sp500 = sp500.iloc[:, 0].to_frame()
+        except Exception:
+             sp500 = sp500.iloc[:, 0].to_frame()
+    elif 'Close' in sp500.columns:
+        sp500 = sp500[['Close']]
+    elif 'Adj Close' in sp500.columns:
+        sp500 = sp500[['Adj Close']]
+    else:
+        sp500 = sp500.iloc[:, 0].to_frame()
+
+    # 컬럼명 통일 및 인덱스 이름 설정
+    sp500.columns = ['SP500']
+    sp500.index.name = 'Date'
+    
+    # 3. CSV로 저장 (전체 데이터 저장)
+    print(f"Saving S&P500 data to cache: {csv_path}")
+    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+    sp500.to_csv(csv_path)
+    
+    print(f"Downloaded and cached {len(sp500)} days of S&P500 data")
     
     return sp500
 
