@@ -57,7 +57,7 @@ PG_CONFIG = {
     'learning_rate': 0.0005,
     'gamma': 0.98,
     'num_trajectories': 5,      # Batch size (trajectories per update)
-    'num_iterations': 100,      # Total iterations (100×5=500 episodes, DQN과 동일)
+    'num_iterations': 1000,     # Total iterations (1000×5=5000 episodes)
     'network_hidden_size': 128  # Hidden layer size
 }
 
