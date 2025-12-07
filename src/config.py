@@ -29,7 +29,7 @@ EPISODE_YEARS = 7          # 에피소드 길이 (년 단위) - 최적화: 10 �
 # 실험 설정
 # ============================================================================
 RANDOM_SEEDS = [42, 123, 456, 789, 1024]  # 실험용 random seeds (design.md 6.2)
-DEFAULT_SEED = 123                         # 기본 seed (현재 학습용)
+DEFAULT_SEED = 42                         # 기본 seed (현재 학습용)
 
 
 # ============================================================================
@@ -43,7 +43,7 @@ DQN_CONFIG = {
     'min_buffer_size': 2000,
     'epsilon_start': 0.08,
     'epsilon_end': 0.01,
-    'epsilon_decay_episodes': 100,
+    'epsilon_decay_episodes': 50,      # 최적화: 200 → 50 (Validation 실험 결과)
     'target_update_freq': 10,
     'train_iterations_per_step': 7,   # 최적화: 10 → 7 (학습 시간 단축)
     'total_episodes': 500              # 최적화: 1000 → 500 (학습 시간 단축)
@@ -56,8 +56,8 @@ DQN_CONFIG = {
 PG_CONFIG = {
     'learning_rate': 0.0005,
     'gamma': 0.98,
-    'num_trajectories': 5,      # Batch size (trajectories per update)
-    'num_iterations': 1000,     # Total iterations (1000×5=5000 episodes)
+    'num_trajectories': 3,      # 최적화: 5 → 3 (Validation 실험 결과)
+    'num_iterations': 1000,     # Total iterations (1000×3=3000 episodes)
     'network_hidden_size': 128  # Hidden layer size
 }
 

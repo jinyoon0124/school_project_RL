@@ -63,68 +63,54 @@ python src/experiments/train_pg.py
 
 ## 4. 학습된 모델 (Pre-trained Models)
 
-다양한 실험 설정으로 학습된 모델을 제공합니다. 아래 링크에서 다운로드하여 `results/models/` 디렉토리에 위치시키면 바로 평가가 가능합니다.
-
-### 모델 명명 규칙
-파일명은 다음과 같은 규칙을 따릅니다:
-- **DQN**: `dqn_lr{learning_rate}_bs{batch_size}_seed{seed}_{timestamp}.pt`
-- **PG**: `pg_lr{learning_rate}_batch{num_trajectories}_seed{seed}_{timestamp}.pt`
+다양한 실험 설정으로 학습된 모델을 제공합니다. 아래 링크에서 다운로드하여 `results/models/` 디렉토리에 위치시키면 바로 평가가 가능합니다. 평가 코드에서 사용하는 주요 utility는 eval_all.py와 eval_hyperparams.py에 정리되어있으며, 프로젝트에서 일부 실험에 사용한 코드는 compare_baseline_vs_rl.py 및 evaluate_randomsee_test.py에서 확인할 수 있습니다. 이 코드 중 일부에는 변경 전 모델명이 하드코딩 되어있을 수 있으니 주의해야합니다. 
 
 ### 다운로드 링크
 
-#### 1. Random Seed Experiments (Lambda = 1.0)
-| Algorithm | Seed | Description | Link |
-|-----------|------|-------------|------|
-| **DQN** | 42 | Baseline (Completed) | [Download](#) |
-| **PG** | 42 | Baseline (Completed) | [Download](#) |
-| **DQN** | 123 | Seed 123 (Running) | [Download](#) |
-| **PG** | 123 | Seed 123 (Running) | [Download](#) |
-| **DQN** | 456 | Seed 456 (Planned) | [Download](#) |
-| **PG** | 456 | Seed 456 (Planned) | [Download](#) |
-| **DQN** | 789 | Seed 789 (Planned) | [Download](#) |
-| **PG** | 789 | Seed 789 (Planned) | [Download](#) |
-| **DQN** | 1024 | Seed 1024 (Planned) | [Download](#) |
-| **PG** | 1024 | Seed 1024 (Planned) | [Download](#) |
-
-#### 2. Risk Aversion (Lambda) Experiments (Seed = 42)
+#### 1. Risk Aversion (Lambda) Experiments (Seed = 42)
 | Algorithm | Lambda | Description | Link |
 |-----------|--------|-------------|------|
-| **DQN** | 5.0 | Balanced Risk | [Download](#) |
-| **PG** | 5.0 | Balanced Risk | [Download](#) |
-| **DQN** | 10.0 | High Safety | [Download](#) |
-| **PG** | 10.0 | High Safety | [Download](#) |
+| **DQN** | 1.0 | Baseline | [Download](https://drive.google.com/file/d/1ch5XHEYwgTDn9-HXpoZAcmXE5kxn3J4Q/view?usp=drive_link) |
+| **DQN** | 5.0 | Balanced Risk | [Download](https://drive.google.com/file/d/1iCiNm3HpA-z0co-fOuBmxSV7DOrnGsVO/view?usp=drive_link) |
+| **DQN** | 10.0 | High Safety | [Download](https://drive.google.com/file/d/1RRIDX0F1gzrEdZxPEoW8xZ9jZa3CphGC/view?usp=drive_link) |
+| **PG** | 1.0 | Baseline | [Download](https://drive.google.com/file/d/1CCkRMd3obm19kcezloNhRtMSOOi3LRpM/view?usp=drive_link) |
+| **PG** | 5.0 | Balanced Risk | [Download](https://drive.google.com/file/d/14I4uLpsKrWRSraTJ9daUfuPZRUk0RaOh/view?usp=drive_link) |
+| **PG** | 10.0 | High Safety | [Download](https://drive.google.com/file/d/1X0SBnf7lwOX1MhPuUG_gHL7VzxUBNLwc/view?usp=drive_link) |
 
-#### 3. Hyperparameter Tuning (Seed = 42, Lambda = 1.0)
+#### 2. Hyperparameter Tuning (Seed = 42, Lambda = 10.0)
 | Algorithm | Parameter | Value | Description | Link |
 |-----------|-----------|-------|-------------|------|
-| **DQN** | Epsilon Decay | 50 | Fast Exploration | [Download](#) |
-| **DQN** | Epsilon Decay | 200 | Slow Exploration | [Download](#) |
-| **PG** | Trajectories | 3 | Small Batch | [Download](#) |
-| **PG** | Trajectories | 10 | Large Batch | [Download](#) |
+| **DQN** | Epsilon Decay | 50 | Fast Exploration | [Download](https://drive.google.com/file/d/1RRIDX0F1gzrEdZxPEoW8xZ9jZa3CphGC/view?usp=drive_link) |
+| **DQN** | Epsilon Decay | 100 | Slow Exploration | [Download](https://drive.google.com/file/d/1hrz-5wk-xR5gNVIeCjmGcqT7YfmCeo72/view?usp=drive_link) |
+| **DQN** | Epsilon Decay | 200 | Slow Exploration | [Download](https://drive.google.com/file/d/1VcZ-5LotGD_dsJsQ8qfW4EafQC4qsCc6/view?usp=drive_link) |
+| **PG** | Trajectories | 3 | Small Batch | [Download](https://drive.google.com/file/d/1YZif0A7HrRLVB0o-K1429ntg5LctTDUz/view?usp=drive_link) |
+| **PG** | Trajectories | 5 | Small Batch | [Download](https://drive.google.com/file/d/1X0SBnf7lwOX1MhPuUG_gHL7VzxUBNLwc/view?usp=drive_link) |
+| **PG** | Trajectories | 10 | Large Batch | [Download](https://drive.google.com/file/d/1Bj5sLIF77h5xIvE9HnUlVvw5a6YEeb__/view?usp=drive_link) |
 
-> **Note**: 위 모델들은 `results/models/` 폴더에 저장해야 `eval_all.py` 스크립트가 인식할 수 있습니다.
+#### 3. Random Seed Experiments (Lambda = 10.0, Epsilon Decay = 50, Trajectories = 5)
+| Algorithm | Seed | Description | Link |
+|-----------|------|-------------|------|
+| **DQN** | 42 | Baseline | [Download](https://drive.google.com/file/d/1RRIDX0F1gzrEdZxPEoW8xZ9jZa3CphGC/view?usp=drive_link) |
+| **DQN** | 123 | Seed 123 | [Download](https://drive.google.com/file/d/1hgGeXBvHoPmzize5B6bmPkrcEGRGaTkx/view?usp=drive_link) |
+| **DQN** | 456 | Seed 456 | [Download](https://drive.google.com/file/d/1R_K-Sgac_zrMjI3TYv3zcNBh6hl0mwkv/view?usp=drive_link) |
+| **DQN** | 789 | Seed 789 | [Download](https://drive.google.com/file/d/1C4bSaHqNNGxBNflOcL0q2SKTKsZCIT5j/view?usp=drive_link) |
+| **DQN** | 1024 | Seed 1024 | [Download](https://drive.google.com/file/d/18DAnyh3cBKZZNOaLpYrckpDhb5RXfHvh/view?usp=drive_link) |
+| **PG** | 42 | Baseline | [Download](https://drive.google.com/file/d/1X0SBnf7lwOX1MhPuUG_gHL7VzxUBNLwc/view?usp=drive_link) |
+| **PG** | 123 | Seed 123 | [Download](https://drive.google.com/file/d/1VwsuPDC8TnGsF2z7RDH-kSLqhQJRNvM7/view?usp=drive_link) |
+| **PG** | 456 | Seed 456 | [Download](https://drive.google.com/file/d/1-IPFsO8THhqnvAyrDTz2Ky4KU_soVIqU/view?usp=drive_link) |
+| **PG** | 789 | Seed 789 | [Download](https://drive.google.com/file/d/1imzr5rC_1eRNYuqxSIPlH0mylWmYtZ63/view?usp=drive_link) |
+| **PG** | 1024 | Seed 1024 | [Download](https://drive.google.com/file/d/1KPNy3zWPfOfedtejdhPdyDtT6MZL5oK_/view?usp=drive_link) |
 
-## 5. 평가 및 시각화 (Evaluation)
 
-학습된 모델을 평가하고 Baseline 전략(주식 100%, 채권 100%, 60/40 전략)과 비교합니다.
-
-```bash
-python src/experiments/eval_all.py
-```
-- Test 기간(2008년~현재)에 대한 수익률, Sharpe Ratio, MDD 등을 계산합니다.
-- 결과 그래프는 `results/plots/`에 저장됩니다.
-
-## 6. 프로젝트 구조 (Project Structure)
+## 5. 프로젝트 구조 (Project Structure)
 
 ```
 school_project_RL/
 ├── data/                   # 데이터 디렉토리
 │   ├── raw/                # 원본 데이터 (SP500.csv, DGS10.csv)
-│   └── processed/          # 전처리된 데이터
 ├── results/                # 실험 결과
-│   ├── models/             # 학습된 모델 (.pt)
+│   ├── models/             # 학습된 모델 (.pt) 다운로드하여 사용
 │   ├── logs/               # 학습 로그 (.json)
-│   └── plots/              # 결과 그래프 (.png)
 ├── src/                    # 소스 코드
 │   ├── agents/             # RL 에이전트 (dqn_agent.py, pg_agent.py)
 │   ├── env/                # 강화학습 환경 (portfolio_env.py)
@@ -135,7 +121,7 @@ school_project_RL/
 └── README.md               # 프로젝트 설명
 ```
 
-## 7. 주요 설정 (Configuration)
+## 6. 주요 설정 (Configuration)
 
 `src/config.py` 파일에서 프로젝트의 모든 주요 설정을 관리합니다.
 

@@ -134,16 +134,16 @@ def main():
     log_path = os.path.join(project_root, 'results', 'logs', log_filename)
     
     # 학습 로그 저장 (하이퍼파라미터 포함)
-    from src.agents.pg_agent import learning_rate, gamma, num_traj, num_iter, network_hidden_size
+    from src.agents.pg_agent import learning_rate, gamma, num_trajectories, num_iterations, hidden_size
     
     log_data = {
         'hyperparameters': {
             'algorithm': 'Policy Gradient (REINFORCE)',
             'learning_rate': learning_rate,
             'gamma': gamma,
-            'num_trajectories': num_traj,
-            'num_iterations': num_iter,
-            'network_hidden_size': network_hidden_size,
+            'num_trajectories': num_trajectories,
+            'num_iterations': num_iterations,
+            'network_hidden_size': hidden_size,
             'lambda_risk': LAMBDA_RISK,
             'episode_years': EPISODE_YEARS,
             'seed': seed,

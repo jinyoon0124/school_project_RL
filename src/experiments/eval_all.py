@@ -211,7 +211,9 @@ def evaluate_model(model, test_df, model_type='dqn'):
                 q_values = model(state_tensor)
                 action = q_values.argmax().item()
             else:  # pg
-                action = model.act(state)
+                state_tensor = torch.from_numpy(state).float()
+                action_probs = model(state_tensor)
+                action = action_probs.argmax().item()  # Deterministic evaluation
             
             # 3. 액션을 delta_w로 변환
             delta_w = action_values[action]

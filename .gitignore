@@ -7,9 +7,11 @@ __pycache__/
 
 # Virtual Environment
 venv/
-/env/
-ENV/
+# /env/
+# ENV/
 myenv/
+others/
+results/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -52,6 +54,7 @@ Thumbs.db
 
 # Logs
 *.log
+lambda_experiment_log.txt
 
 # Distribution / packaging
 build/
