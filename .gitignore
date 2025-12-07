@@ -22,7 +22,7 @@ results/
 *.pth
 
 # Data files
-data/raw/*.csv
+# data/raw/*.csv
 data/raw/*.xlsx
 data/processed/*.csv
 data/processed/*.pkl
